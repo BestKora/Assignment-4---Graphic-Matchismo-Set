@@ -96,7 +96,7 @@
 }
 - (GameSettings *)gameSettings
 {
-    if (!_gameSettings) _gameSettings = [[GameSettings alloc] initFromUserDefaults];
+    if (!_gameSettings) _gameSettings = [[GameSettings alloc] init];
     
     return _gameSettings;
 }

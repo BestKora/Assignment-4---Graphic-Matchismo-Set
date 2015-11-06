@@ -7,6 +7,7 @@
 //
 
 #import "CardGameViewController.h"
+#import "GameSettings.h"
 #import "Grid.h"
 #import "PadView.h"
 #import "CheckView.h"
@@ -26,7 +27,6 @@
 @property (strong,nonatomic) NSMutableArray *indexCardsForCardsView; //of NSUIntegers
 @property (nonatomic) NSUInteger numberViews;
 @property (nonatomic) CGFloat cardAspectRatio;
-@property (nonatomic) BOOL didLoad;
 
 @property (nonatomic) NSUInteger hint;
 @property (nonatomic) NSUInteger iOfSets;
@@ -78,6 +78,12 @@
     return 20;
 }
 
+
+- (GameSettings *)gameSettings
+{
+    if (!_gameSettings) _gameSettings = [[GameSettings alloc] init];
+    return _gameSettings;
+}
 
 - (NSUInteger)numberViews
 {
@@ -198,7 +204,6 @@
                 }
                     self.cellCenters[j]= [NSValue valueWithCGPoint:center];
                     self.indexCardsForCardsView[j]= [NSNumber numberWithInteger: i];
-                
                     j++;
             }
     }
@@ -326,7 +331,6 @@
                                               cancelButtonTitle:nil
                                               otherButtonTitles:@"Игра окончена!", nil];
         [alert show];
-
     }
 }
 
@@ -334,8 +338,8 @@
 - (void)animateRemovingCards:(NSArray *)dropsToRemove
 {
     
-  [UIView animateWithDuration:1.0f
-                          delay:1.0f
+  [UIView animateWithDuration:0.65f
+                          delay:0.2f
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^ {
                          for (UIView *drop in dropsToRemove) {
@@ -397,9 +401,8 @@
                          }];
     }
     
-   self.cardsView =nil;
-	CGPoint point = CGPointMake(self.view.bounds.size.width / 2.0f, self.view.bounds.size.height); // * 2.0f);
 
+	CGPoint point = CGPointMake(self.view.bounds.size.width / 2.0f, self.view.bounds.size.height);
     int i=0;
     for (UIView *v in self.cardsView) {
         v.center = point;
@@ -534,19 +537,27 @@
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    self.game.matchBonus = self.gameSettings.bonus; //matchBonus;
+    self.game.mismatchPenalty = self.gameSettings.penalty; //mismatchPenalty;
+    self.game.flipCost = self.gameSettings.flipCost;
+}
+
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    if (self.didLoad){
-    [self performIntroAnimationForView:self.padView];
-        self.didLoad =!self.didLoad;
+    if (!_cardsView){
+     [self performIntroAnimationForView:self.padView];
     }
 }
 
 -(void)viewDidLoad
 {
     [super viewDidLoad];
-    self.didLoad =YES;
+
     [self.padView addGestureRecognizer:[[UIPinchGestureRecognizer alloc] initWithTarget:self.padView action:@selector(pinch:)]];
     [self.padView addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self.padView action:@selector(pan:)]];
     [self updateUI];

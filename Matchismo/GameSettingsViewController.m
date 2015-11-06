@@ -25,9 +25,11 @@
 
 - (GameSettings *)gameSettings
 {
-    if (!_gameSettings) _gameSettings = [[GameSettings alloc] initFromUserDefaults];    
+    if (!_gameSettings) _gameSettings = [[GameSettings alloc] init];
     return _gameSettings;
 }
+
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -41,27 +43,24 @@
     self.bonusLabel.text =[NSString stringWithFormat:@"Match Bonus: %d",self.gameSettings.bonus];
     self.penaltyLabal.text =[NSString stringWithFormat:@"Mismatch penalty: %d",self.gameSettings.penalty];
     self.flipCostLabel.text =[NSString stringWithFormat:@"Flip Cost: %d",self.gameSettings.flipCost];
-    
-   
 }
 
 - (IBAction)stepperChanged:(UIStepper *)sender
 {
-    [self updateUI];
+    self.bonusLabel.text =[NSString stringWithFormat:@"Match Bonus: %d",(int)round(self.bonusStepper.value)];
+    self.gameSettings.bonus = (int)round(self.bonusStepper.value);
 }
 - (IBAction)stepperPenaltyChanged:(UIStepper *)sender
 {
-    [self updateUI];
+    self.penaltyLabal.text =[NSString stringWithFormat:@"Mismatch penalty: %d",(int)round(self.penaltyStepper.value)];
+    self.gameSettings.penalty = (int)round(self.penaltyStepper.value);
 }
 - (IBAction)stepperFlipCostChanged:(UIStepper *)sender
 {
-    [self updateUI];
+    self.flipCostLabel.text =[NSString stringWithFormat:@"Flip Cost: %d",(int)round(self.flipCostStepper.value)];
+    self.gameSettings.flipCost = (int)round(self.flipCostStepper.value);
 }
-- (IBAction)deFaults
-{
-   [self.gameSettings defaults];
-    [self setupUI];
-}
+
 
 - (void) updateUI
 {
@@ -71,7 +70,7 @@
     self.gameSettings.bonus = (int)round(self.bonusStepper.value);
     self.gameSettings.penalty = (int)round(self.penaltyStepper.value);
     self.gameSettings.flipCost = (int)round(self.flipCostStepper.value);
-    [self.gameSettings synchronize];
+
 }
 
 

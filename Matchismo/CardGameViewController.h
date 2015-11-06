@@ -10,6 +10,8 @@
 #import <UIKit/UIKit.h>
 #import "Deck.h"
 #import "CardMatchingGame.h"
+#import "GameSettings.h"
+
 
 @interface CardGameViewController : UIViewController
 
@@ -26,5 +28,7 @@
 
 - (UIView *)cellViewForCard:(Card *)card inRect:(CGRect)rect; //abstract
 - (void) updateCell:(UIView *)cell usingCard:(Card *)card animate:(BOOL)animate; //abstract
+@property (strong, nonatomic) GameSettings *gameSettings;
+
 
 @end

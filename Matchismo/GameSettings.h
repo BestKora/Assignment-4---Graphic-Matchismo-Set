@@ -14,7 +14,4 @@
 @property (nonatomic) int penalty;
 @property (nonatomic) int flipCost;
 
-- (id)initFromUserDefaults;
-- (void)synchronize;
-- (void) defaults;
 @end
