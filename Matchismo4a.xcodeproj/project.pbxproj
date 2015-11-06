@@ -172,6 +172,7 @@
 				E4A2D26D18261F13004D613E /* Model */,
 				E49F60CB1847113C00BE71F8 /* Grid */,
 				E4B357431BED13EE008C4B3A /* Views */,
+				E4A2D24718261314004D613E /* Main.storyboard */,
 				E4A2D24A18261314004D613E /* CardGameViewController.h */,
 				E4A2D24B18261314004D613E /* CardGameViewController.m */,
 				E4A85AD51832772B0023F6AD /* PlayingCardGameViewController.h */,
@@ -243,7 +244,6 @@
 		E4B357431BED13EE008C4B3A /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				E4A2D24718261314004D613E /* Main.storyboard */,
 				E49F60CF1847116200BE71F8 /* PlayingCardView.h */,
 				E49F60D01847116200BE71F8 /* PlayingCardView.m */,
 				E4DEF467184C7C6E00530719 /* SetCardView.h */,
