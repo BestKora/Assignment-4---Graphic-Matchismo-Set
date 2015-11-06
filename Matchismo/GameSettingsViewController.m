@@ -61,17 +61,4 @@
     self.gameSettings.flipCost = (int)round(self.flipCostStepper.value);
 }
 
-
-- (void) updateUI
-{
-    self.bonusLabel.text =[NSString stringWithFormat:@"Match Bonus: %d",(int)round(self.bonusStepper.value)];
-    self.penaltyLabal.text =[NSString stringWithFormat:@"Mismatch penalty: %d",(int)round(self.penaltyStepper.value)];
-    self.flipCostLabel.text =[NSString stringWithFormat:@"Flip Cost: %d",(int)round(self.flipCostStepper.value)];
-    self.gameSettings.bonus = (int)round(self.bonusStepper.value);
-    self.gameSettings.penalty = (int)round(self.penaltyStepper.value);
-    self.gameSettings.flipCost = (int)round(self.flipCostStepper.value);
-
-}
-
-
 @end
