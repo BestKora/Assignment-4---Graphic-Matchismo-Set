@@ -17,16 +17,16 @@
 
 @property (strong, nonatomic) Deck *deck;
 @property (nonatomic,strong) CardMatchingGame *game;
-@property (nonatomic) int flipCount;
 
 @property (strong,nonatomic) Grid *grid;
 @property (weak, nonatomic) IBOutlet PadView *padView;
 @property (strong,nonatomic) NSMutableArray *cardsView; //of UIViews
-@property (strong,nonatomic) NSMutableArray *cellCenters; //of CGPoints
 
+@property (strong,nonatomic) NSMutableArray *cellCenters; //of CGPoints
 @property (strong,nonatomic) NSMutableArray *indexCardsForCardsView; //of NSUIntegers
 @property (nonatomic) NSUInteger numberViews;
-@property (nonatomic) CGFloat cardAspectRatio;
+
+@property (strong, nonatomic) GameSettings *gameSettings;
 
 @property (nonatomic) NSUInteger hint;
 @property (nonatomic) NSUInteger iOfSets;
@@ -59,7 +59,17 @@
 
 - (NSUInteger)numberOfMatches //abstract
 {
-    return 0;
+    return 2;
+}
+
+- (NSUInteger) startingCardCount //abstract
+{
+    return 20;
+}
+
+- (BOOL) addCardsAfterDelete
+{
+    return NO;
 }
 
 - (CGFloat)cardAspectRatio //abstract
@@ -71,13 +81,6 @@
 {
     return CGSizeMake(80.0, 120.0);
 }
-
-
-- (NSUInteger) startingCardCount
-{
-    return 20;
-}
-
 
 - (GameSettings *)gameSettings
 {
@@ -212,7 +215,6 @@
 - (IBAction)Deal
 {
     self.game = nil;
-    self.flipCount =0;
     self.grid.minimumNumberOfCells = self.startingCardCount;
     [self performIntroAnimationForView:self.padView];
     self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",([self.deck count]-[self.game cardsInPlay])];
@@ -229,9 +231,7 @@
         if (indexView<[self.indexCardsForCardsView count]) {
             NSUInteger index =[self.indexCardsForCardsView[indexView] unsignedIntegerValue];
             [self.game chooseCardAtIndex:index];
-
-            self.flipCount++;
-           [self updateUI];
+            [self updateUI];
             if ([self.game.matchedCards count] == [self numberOfMatches]&& self.game.lastFlipPoints>0){
             [self deleteCardsFromGrid];
             }

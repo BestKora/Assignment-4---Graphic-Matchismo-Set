@@ -45,16 +45,12 @@
         SetCard *setCard =(SetCard *)card;
         SetCardView *newSetCardView = [[SetCardView alloc]  initWithFrame:rect];
         newSetCardView.opaque = NO;
-//        newSetCardView.number = setCard.number;
         
         newSetCardView.rank = setCard.number;
         newSetCardView.symbol = setCard.symbol;
         newSetCardView.color = setCard.color;
         newSetCardView.shading = setCard.shading;
-//        newSetCardView.chosen = setCard.isChosen;
         newSetCardView.faceUp = setCard.isChosen;
-
-//--------------------------------------------------
  
         return newSetCardView;
     }

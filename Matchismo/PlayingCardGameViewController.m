@@ -38,9 +38,14 @@
     return NO;
 }
 
+- (CGFloat)cardAspectRatio 
+{
+    return 60.0f/90.0f;
+}
+
 - (UIView *)cellViewForCard:(Card *)card inRect:(CGRect)rect //abstract
 {
-    //  PlayingCardView *newPlayingCardView=nil;
+
     if ([card isKindOfClass:[PlayingCard class]]) {
         PlayingCard *playingCard =(PlayingCard *)card;
         PlayingCardView *newPlayingCardView = [[PlayingCardView alloc]  initWithFrame:rect];

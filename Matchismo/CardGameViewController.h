@@ -15,20 +15,20 @@
 
 @interface CardGameViewController : UIViewController
 
+@property (nonatomic)NSUInteger numberOfMatches;  //abstract
+
 @property (nonatomic)NSUInteger startingCardCount;  //abstract
 @property (nonatomic)BOOL addCardsAfterDelete; //abstract
-
+@property (nonatomic) CGFloat cardAspectRatio;  //abstract
+@property (nonatomic) CGSize maxCardSize;  //abstract
 
 // protected
 // for subclasses
 - (Deck *)createDeck;   //abstract
-- (NSUInteger)numberOfMatches; //abstract
-- (CGFloat)cardAspectRatio; //abstract
-- (CGSize) maxCardSize; //abstract
+
 
 - (UIView *)cellViewForCard:(Card *)card inRect:(CGRect)rect; //abstract
 - (void) updateCell:(UIView *)cell usingCard:(Card *)card animate:(BOOL)animate; //abstract
-@property (strong, nonatomic) GameSettings *gameSettings;
 
 
 @end
