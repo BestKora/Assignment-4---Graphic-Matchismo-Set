@@ -18,22 +18,22 @@
 @property (strong, nonatomic) Deck *deck;
 @property (nonatomic,strong) CardMatchingGame *game;
 
-@property (strong,nonatomic) Grid *grid;
 @property (weak, nonatomic) IBOutlet PadView *padView;
 @property (strong,nonatomic) NSMutableArray *cardsView; //of UIViews
+@property (strong,nonatomic) Grid *grid;
 
 @property (strong,nonatomic) NSMutableArray *cellCenters; //of CGPoints
 @property (strong,nonatomic) NSMutableArray *indexCardsForCardsView; //of NSUIntegers
 @property (nonatomic) NSUInteger numberViews;
 
+@property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
+@property (weak, nonatomic) IBOutlet UILabel *resultsLabel;
+@property (weak, nonatomic) IBOutlet UIButton *hintButton;
+
 @property (strong, nonatomic) GameSettings *gameSettings;
 
 @property (nonatomic) NSUInteger hint;
 @property (nonatomic) NSUInteger iOfSets;
-
-@property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
-@property (weak, nonatomic) IBOutlet UILabel *resultsLabel;
-@property (weak, nonatomic) IBOutlet UIButton *hintButton;
 
 @end
 
@@ -57,29 +57,9 @@
     return nil;
 }
 
-- (NSUInteger)numberOfMatches //abstract
-{
-    return 2;
-}
-
 - (NSUInteger) startingCardCount //abstract
 {
-    return 20;
-}
-
-- (BOOL) addCardsAfterDelete
-{
-    return NO;
-}
-
-- (CGFloat)cardAspectRatio //abstract
-{
-    return 60.0f/90.0f;
-}
-
-- (CGSize)maxCardSize //abstract
-{
-    return CGSizeMake(80.0, 120.0);
+    return 0;
 }
 
 - (GameSettings *)gameSettings
@@ -90,10 +70,9 @@
 
 - (NSUInteger)numberViews
 {
-    
     if (_numberViews == 0 || !self.cardsView) {
-        _numberViews = self.startingCardCount;
-    }else _numberViews =[self.cardsView count];
+           _numberViews = self.startingCardCount;
+    } else _numberViews =[self.cardsView count];
     return _numberViews;
 }
 
@@ -125,7 +104,7 @@
     {
         _grid =[[Grid alloc] init];
         _grid.size = self.padView.bounds.size;
-        _grid.cellAspectRatio = self.cardAspectRatio;
+        _grid.cellAspectRatio = self.maxCardSize.width / self.maxCardSize.height;
         _grid.minimumNumberOfCells = self.numberViews;
         _grid.maxCellWidth = self.maxCardSize.width;
         _grid.maxCellHeight = self.maxCardSize.height;
@@ -136,7 +115,6 @@
 #define DEFAULT_FACE_CARD_SCALE_FACTOR 0.95
 #define NUMBER_ADD_CARDS 3
 
-
 - (NSArray *)cardsView
 {
     if (!_cardsView)
@@ -144,9 +122,8 @@
         _cardsView = [[NSMutableArray alloc] init];
         self.cellCenters =nil;
         self.indexCardsForCardsView =nil;
+        NSUInteger numberCardsInPlay =self.game.cardsInPlay - 1;
         NSUInteger columnCount =self.grid.columnCount;
-
-        NSUInteger numberCardsInPlay =[self.game cardsInPlay]-1;
         NSUInteger j =0;
         for (NSUInteger i=0; i<= numberCardsInPlay; i++) {
             Card *card = [self.game cardAtIndex:i];
@@ -177,7 +154,7 @@
     self.cellCenters =nil;
     self.indexCardsForCardsView =nil;
     NSUInteger columnCount =self.grid.columnCount;
-    NSUInteger numberCardsInPlay =[self.game cardsInPlay]-1;
+    NSUInteger numberCardsInPlay =self.game.cardsInPlay-1;
     NSUInteger j =0;
     for (NSUInteger i=0; i<=numberCardsInPlay; i++)
     {
@@ -217,7 +194,7 @@
     self.game = nil;
     self.grid.minimumNumberOfCells = self.startingCardCount;
     [self performIntroAnimationForView:self.padView];
-    self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",([self.deck count]-[self.game cardsInPlay])];
+    self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",([self.deck count]-self.game.cardsInPlay)];
     [self restartHints];
 
 }
@@ -265,7 +242,8 @@
         [self updateCell:cell usingCard:card animate:YES];
     }
     self.scoreLabel.text = [NSString stringWithFormat:@"Score: %ld", (long)self.game.score];
-    self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",([self.deck count]-[self.game cardsInPlay])];
+    self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",
+                                                 ([self.deck count]-self.game.cardsInPlay)];
 }
 
 - (void)deleteCardsFromGrid
@@ -323,6 +301,7 @@
             }];
             
         [self animateInsertingCards:cardsViewToInsert forView:self.padView];
+        self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",([self.deck count]-self.game.cardsInPlay)];
         }
     } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil
@@ -339,7 +318,7 @@
 {
     
   [UIView animateWithDuration:0.65f
-                          delay:0.2f
+                          delay:0.8f
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^ {
                          for (UIView *drop in dropsToRemove) {
@@ -392,16 +371,14 @@
     for (UIView *v in [self.padView subviews]) {
         [UIView animateWithDuration:0.5
                          animations:^{
-                             v.frame = CGRectMake(0.0,
-                                                        self.padView.bounds.size.height,
+                             v.frame = CGRectMake(0.0,  self.padView.bounds.size.height,
                                                         self.grid.cellSize.width,
                                                         self.grid.cellSize.height);
                          } completion:^(BOOL finished) {
                              [v removeFromSuperview];
                          }];
     }
-    
-
+    self.cardsView = nil;
 	CGPoint point = CGPointMake(self.view.bounds.size.width / 2.0f, self.view.bounds.size.height);
     int i=0;
     for (UIView *v in self.cardsView) {
@@ -456,7 +433,8 @@
 -(void)restartHints
 {
     self.hint =0;
-    [self.hintButton  setTitle: [NSString stringWithFormat:@"Hint"]forState:UIControlStateNormal];
+    [self.hintButton  setTitle: [NSString stringWithFormat:@"??"]forState:UIControlStateNormal];
+    self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",([self.deck count]-self.game.cardsInPlay)];
     self.iOfSets =0;
 }
 
@@ -470,7 +448,7 @@
     arrayOfSets =self.game.matchesInRemainingCards;
     switch (self.hint) {
         case 0:
-            self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",([self.deck count]-[self.game cardsInPlay])];
+            self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",([self.deck count]-self.game.cardsInPlay)];
             self.resultsLabel.text=[self.resultsLabel.text stringByAppendingString:[NSString stringWithFormat:@" %lu sets",(unsigned long)[arrayOfSets count]] ];
             if ([arrayOfSets count]>0) {
                 self.hint =1;

@@ -1,6 +1,6 @@
 //
 //  PlayingCardGameViewController.m
-//  Matchismo3
+//  Matchismo4
 //
 //  Created by Tatiana Kornilova on 11/12/13.
 //  Copyright (c) 2013 Tatiana Kornilova. All rights reserved.
@@ -22,25 +22,9 @@
     return [[PlayingCardDeck alloc] init];
 }
 
-- (NSUInteger)numberOfMatches
-{
-    return 2;
-}
-
-
 - (NSUInteger) startingCardCount
 {
-    return 20;
-}
-
-- (BOOL) addCardsAfterDelete
-{
-    return NO;
-}
-
-- (CGFloat)cardAspectRatio 
-{
-    return 60.0f/90.0f;
+    return 24;
 }
 
 - (UIView *)cellViewForCard:(Card *)card inRect:(CGRect)rect //abstract
@@ -67,7 +51,6 @@
         playingCardView.suit = playingCard.suit;
         //-------------
         if (playingCardView.faceUp != playingCard.isChosen) {
-  //          NSLog(@"card = %@, bonds = %f", card, (double)cell.bounds.size.width);
             if (animate) {
                 [UIView transitionWithView:playingCardView
                                   duration:0.5
@@ -82,5 +65,12 @@
      }
 }
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    self.maxCardSize = CGSizeMake(80.0, 120.0);
+    self.addCardsAfterDelete = NO;
+    self.numberOfMatches = 2;
+}
 
 @end

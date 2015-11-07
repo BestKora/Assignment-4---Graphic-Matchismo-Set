@@ -15,17 +15,15 @@
 
 @interface CardGameViewController : UIViewController
 
-@property (nonatomic)NSUInteger numberOfMatches;  //abstract
+@property (nonatomic)NSUInteger numberOfMatches;
+@property (nonatomic)BOOL addCardsAfterDelete;
+@property (nonatomic) CGSize maxCardSize;
 
-@property (nonatomic)NSUInteger startingCardCount;  //abstract
-@property (nonatomic)BOOL addCardsAfterDelete; //abstract
-@property (nonatomic) CGFloat cardAspectRatio;  //abstract
-@property (nonatomic) CGSize maxCardSize;  //abstract
 
 // protected
 // for subclasses
 - (Deck *)createDeck;   //abstract
-
+- (NSUInteger) startingCardCount; //abstract
 
 - (UIView *)cellViewForCard:(Card *)card inRect:(CGRect)rect; //abstract
 - (void) updateCell:(UIView *)cell usingCard:(Card *)card animate:(BOOL)animate; //abstract

@@ -21,22 +21,9 @@
     return [[SetCardDeck alloc] init];
 }
 
-- (NSUInteger)numberOfMatches
-{
-    return 3;
-}
 - (NSUInteger) startingCardCount
 {
     return 12;
-}
-- (BOOL) addCardsAfterDelete
-{
-    return YES;
-}
-
-- (CGSize)maxCardSize //abstract
-{
-    return CGSizeMake(80.0, 120.0);
 }
 
 - (UIView *)cellViewForCard:(Card *)card inRect:(CGRect)rect //abstract
@@ -81,4 +68,13 @@
             }
         }
 }
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    self.maxCardSize = CGSizeMake(120.0, 120.0);
+    self.addCardsAfterDelete = YES;
+    self.numberOfMatches = 3;
+}
+
 @end

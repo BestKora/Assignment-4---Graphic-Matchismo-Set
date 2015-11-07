@@ -40,6 +40,11 @@
     return [remCards copy];
 }
 
+- (NSUInteger)cardsInPlay
+{
+    return [self.cards count];
+}
+
 -(NSMutableArray *)matchesInRemainingCards
 {
     NSMutableArray *matches =[[NSMutableArray alloc] init];
@@ -152,10 +157,6 @@ static const int COST_TO_CHOOSE = 1;
     return (index<[self.cards count]) ? self.cards[index] : nil;
 }
 
-- (NSUInteger)cardsInPlay
-{
-    return [self.cards count];
-}
 
 
 - (NSIndexSet *)getIndexesForMatchedCards:(NSArray *)cards

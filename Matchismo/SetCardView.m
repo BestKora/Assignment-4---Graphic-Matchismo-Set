@@ -202,6 +202,12 @@ static void drawStripes (void *info, CGContextRef context) {
     [self setNeedsDisplay];
 }
 
+- (void)setSymbol:(NSString *)symbol
+{
+    _symbol = symbol;
+    [self setNeedsDisplay];
+}
+
 -(void) setFaceUp:(BOOL)faceUp
 {
     _faceUp =faceUp;

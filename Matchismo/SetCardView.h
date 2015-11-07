@@ -10,15 +10,11 @@
 
 @interface SetCardView : UIView
 
-//@property (strong, nonatomic) NSString *shape;
 @property (nonatomic,strong) NSString *symbol;
 @property (nonatomic,strong) NSString *shading;
 @property (nonatomic,strong) NSString *color;
+@property (nonatomic) NSUInteger rank; //число символов
 
-@property (nonatomic) NSUInteger rank;
-
-@property (nonatomic) BOOL faceUp;
-
-//-(void)pinch:(UIPinchGestureRecognizer *)gesture;
+@property (nonatomic) BOOL faceUp; // выбрана
               
 @end
