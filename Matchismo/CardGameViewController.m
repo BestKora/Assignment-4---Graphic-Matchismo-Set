@@ -39,6 +39,7 @@
 
 @implementation CardGameViewController
 
+#pragma mark - Lazy Instantiation of Properties
 - (CardMatchingGame *)game
 {
     if (!_game) _game = [[CardMatchingGame alloc] initWithCardCount:self.startingCardCount usingDeck:[self createDeck]];
@@ -115,6 +116,7 @@
 #define DEFAULT_FACE_CARD_SCALE_FACTOR 0.95
 #define NUMBER_ADD_CARDS 3
 
+#pragma mark - Animation Cards
 - (NSArray *)cardsView
 {
     if (!_cardsView)
@@ -150,7 +152,6 @@
 
 -(void)reDrawViewsWithAnimationForView:(UIView*)view
 {
-    
     self.cellCenters =nil;
     self.indexCardsForCardsView =nil;
     NSUInteger columnCount =self.grid.columnCount;
@@ -164,12 +165,15 @@
                 NSUInteger row = (j+0.5)/columnCount;
                 NSUInteger column =j%columnCount;
                 CGPoint center = [self.grid centerOfCellAtRow:row inColumn:column];
-                double distance = sqrt((v.center.x - center.x)*(v.center.x - center.x) +(v.center.y - center.y)*(v.center.y - center.y));
+                double distance = sqrt((v.center.x - center.x)*(v.center.x - center.x) +
+                                       (v.center.y - center.y)*(v.center.y - center.y));
                 CGRect frame = [self.grid frameOfCellAtRow:row inColumn:column];
                 
                 CGRect frame1 = CGRectInset(frame,
-                                            frame.size.width * (1.0 - DEFAULT_FACE_CARD_SCALE_FACTOR),
-                                            frame.size.height * (1.0 - DEFAULT_FACE_CARD_SCALE_FACTOR));
+                                            frame.size.width *
+                                            (1.0 - DEFAULT_FACE_CARD_SCALE_FACTOR),
+                                            frame.size.height *
+                                            (1.0 - DEFAULT_FACE_CARD_SCALE_FACTOR));
                 if (distance>frame.size.width*0.0001f) {
                     [UIView animateWithDuration:0.2f
                                           delay:0.0f+(i*0.1f)
@@ -189,6 +193,7 @@
     }
 }
 
+#pragma mark - Deat and Flip Cards
 - (IBAction)Deal
 {
     self.game = nil;
@@ -219,6 +224,7 @@
     }
 }
 
+#pragma mark - UpdateUI
 - (NSUInteger)indexForItemInViewArray:(NSArray *)array atPoint:(CGPoint)point
 {
     NSUInteger index =0;
@@ -246,19 +252,44 @@
                                                  ([self.deck count]-self.game.cardsInPlay)];
 }
 
+#pragma mark - Delete Cards
+
 - (void)deleteCardsFromGrid
 {
      [self removeHints];
      [self restartHints];
-        NSMutableArray *cardsViewToMove = [NSMutableArray array];
+        NSMutableArray *cardsViewToRemove = [NSMutableArray array];
         NSIndexSet *indexes=[self.game getIndexesForMatchedCards:self.game.matchedCards];
         [indexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-           [cardsViewToMove addObject:self.cardsView[idx]];
+           [cardsViewToRemove addObject:self.cardsView[idx]];
         }];
-        [self animateRemovingCards:cardsViewToMove];
+        [self animateRemovingCards:cardsViewToRemove];
 }
 
+//----- Анимация удаления карт с игрового стола ---------
+- (void)animateRemovingCards:(NSArray *)cardsViewToRemove
+{
+    [UIView animateWithDuration:0.65f
+                          delay:0.8f
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^ {
+                         for (UIView *card in cardsViewToRemove) { card.alpha = 0.3; }
+                     }
+                     completion:^(BOOL finished) {
+                         for (UIView *card in cardsViewToRemove) { card.hidden =YES; }
+                         self.grid.minimumNumberOfCells =[[self.game cardsOnTable] count];
+                         if (self.addCardsAfterDelete)
+                         {
+                             [self addCards:nil];
+                         } else {
+                             [self reDrawViewsWithAnimationForView:self.padView];
+                         }
+                     }];
+}
 
+#pragma mark - Insert Cards
+
+//----- Добавление карт на игровой стол ---------
 - (IBAction)addCards:(id)sender
 {
     [self removeHints];
@@ -313,38 +344,10 @@
     }
 }
 
-
-- (void)animateRemovingCards:(NSArray *)dropsToRemove
-{
-    
-  [UIView animateWithDuration:0.65f
-                          delay:0.8f
-                        options:UIViewAnimationOptionCurveEaseOut
-                     animations:^ {
-                         for (UIView *drop in dropsToRemove) {
-                             drop.alpha = 0.3;
-                         }
-
-     }
-                     completion:^(BOOL finished) {
-                         for (UIView *drop in dropsToRemove) { drop.hidden =YES;  }
-                             self.grid.minimumNumberOfCells =[[self.game cardsOnTable] count];
-                             if (self.addCardsAfterDelete)
-                             {
-                                 [self addCards:nil];
-                             } else {
-                                 [self reDrawViewsWithAnimationForView:self.padView];
-                             }
-                     }];
-    }
-    
-
-
-
+//----- Анимация добавления карт на игровой стол ---------
 - (void)animateInsertingCards:(NSArray *)cardsViewToInsert
                       forView:(UIView *)view
 {
-    
     int i=0;
     for (UIView *v in cardsViewToInsert) {
         [view addSubview:v];
@@ -356,7 +359,9 @@
              
              v.hidden = NO ;
              NSUInteger indexView = [self.cardsView indexOfObject:v];
-             NSUInteger index =[self.indexCardsForCardsView indexOfObject:[NSNumber numberWithInteger: indexView]];
+             NSUInteger index =[self.indexCardsForCardsView
+                                indexOfObject:[NSNumber
+                            numberWithInteger: indexView]];
              CGPoint center = [self.cellCenters[index] CGPointValue];
              v.center = center;
              
@@ -366,6 +371,8 @@
     }
 }
 
+#pragma mark - Animation Deal
+//----- Анимация "пересдачи" карт ---------
 - (void)performIntroAnimationForView:(UIView*)view
 {
     for (UIView *v in [self.padView subviews]) {
@@ -379,7 +386,8 @@
                          }];
     }
     self.cardsView = nil;
-	CGPoint point = CGPointMake(self.view.bounds.size.width / 2.0f, self.view.bounds.size.height);
+	CGPoint point = CGPointMake(self.view.bounds.size.width / 2.0f,
+                                self.view.bounds.size.height);
     int i=0;
     for (UIView *v in self.cardsView) {
         v.center = point;
@@ -398,8 +406,10 @@
                      completion:nil];
         i++;
     }
-    
 }
+
+#pragma mark - Animation pinch
+//----- Анимация жеста pinch ---------
 - (void)restoreAfterPichAnimationForView:(UIView*)view
 {
     NSUInteger cardsCount = [self.indexCardsForCardsView count];
@@ -421,6 +431,8 @@
     }
 }
 
+#pragma mark - Animation Hints for Set game
+//----- Убираем визуальные подсказки для игры Set ---------
 -(void)removeHints
 {
     for (UIView *h in self.padView.subviews) {
@@ -438,6 +450,7 @@
     self.iOfSets =0;
 }
 
+//----- Управление визуальными подсказками для игры Set ---------
 - (IBAction)hintButton:(UIButton *)sender
 {
     NSMutableArray *arrayOfSets =[[NSMutableArray alloc] init];
@@ -482,6 +495,7 @@
     }
 }
 
+//----- Анимируем визуальную подсказкау для игры Set ---------
 - (void)animateHintedCards:(NSArray *)cardsViewToHint forView:(UIView *)view
 {
     int i=0;
@@ -505,6 +519,8 @@
         i++;
     }
 }
+
+#pragma mark - Life Cycle
 
 -(void)viewDidLayoutSubviews
 {
@@ -536,9 +552,10 @@
 {
     [super viewDidLoad];
 
-    [self.padView addGestureRecognizer:[[UIPinchGestureRecognizer alloc] initWithTarget:self.padView action:@selector(pinch:)]];
-    [self.padView addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self.padView action:@selector(pan:)]];
-    [self updateUI];
+    [self.padView addGestureRecognizer:[[UIPinchGestureRecognizer alloc]
+                                        initWithTarget:self.padView action:@selector(pinch:)]];
+    [self.padView addGestureRecognizer:[[UIPanGestureRecognizer alloc]
+                                        initWithTarget:self.padView action:@selector(pan:)]];
 
 }
 @end
