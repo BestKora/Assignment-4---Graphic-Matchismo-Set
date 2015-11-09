@@ -297,13 +297,26 @@
 //----- Добавление карт на игровой стол ---------
 - (IBAction)addCards:(id)sender
 {
+    NSUInteger addNumberCards = NUMBER_ADD_CARDS;
+    NSString *numberCards = [NSString stringWithFormat:@"%lu карты", ([self.deck count]-self.game.cardsInPlay)];
+    if (([self.deck count]-self.game.cardsInPlay) < NUMBER_ADD_CARDS ){
+        addNumberCards = [self.deck count]-self.game.cardsInPlay;
+        [ @"Добавляю"  stringByAppendingString:numberCards];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil
+                                                        message:@"В колоде недостаточно карт ..."
+                                                       delegate:nil
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:[ @"Добавляю "  stringByAppendingString:numberCards], nil];
+        [alert show];
+
+    }
     [self removeHints];
     [self restartHints];
     CGPoint point = CGPointMake(self.view.bounds.size.width / 2.0f, self.view.bounds.size.height);
     NSMutableArray *cardsViewToInsert = [NSMutableArray array];
     
-    [self.game addCards:NUMBER_ADD_CARDS];
-    if ([self.game.indexesOfInsertedCards count] == NUMBER_ADD_CARDS) {
+    [self.game addCards: addNumberCards];
+    if ([self.game.indexesOfInsertedCards count] ==  addNumberCards) {
         self.grid.minimumNumberOfCells =[[self.game cardsOnTable] count]; ///???
         if (self.grid.inputsAreValid){
            NSUInteger columnCount =self.grid.columnCount;
@@ -339,13 +352,6 @@
         [self animateInsertingCards:cardsViewToInsert forView:self.padView];
         self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",([self.deck count]-self.game.cardsInPlay)];
         }
-    } else {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil
-                                                        message:@"В колоде недостаточно карт ..."
-                                                       delegate:nil
-                                              cancelButtonTitle:nil
-                                              otherButtonTitles:@"Игра окончена!", nil];
-        [alert show];
     }
 }
 
