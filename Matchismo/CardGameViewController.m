@@ -174,9 +174,9 @@
                                             (1.0 - DEFAULT_FACE_CARD_SCALE_FACTOR),
                                             frame.size.height *
                                             (1.0 - DEFAULT_FACE_CARD_SCALE_FACTOR));
-                if (distance>frame.size.width*0.0001f) {
+                if (distance>frame.size.width*0.01f) {
                     [UIView animateWithDuration:0.2f
-                                          delay:0.0f+(i*0.1f)
+                                          delay:0.0f+(j*0.1f)
                                         options:UIViewAnimationOptionCurveEaseInOut
                                      animations:^
                      {
@@ -190,6 +190,10 @@
                     self.indexCardsForCardsView[j]= [NSNumber numberWithInteger: i];
                     j++;
             }
+    }
+    if ([self.resultsLabel.text  isEqual: @""]) {
+    self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",
+                            ([self.deck count]-self.game.cardsInPlay)];
     }
 }
 
@@ -225,6 +229,7 @@
 }
 
 #pragma mark - UpdateUI
+
 - (NSUInteger)indexForItemInViewArray:(NSArray *)array atPoint:(CGPoint)point
 {
     NSUInteger index =0;
