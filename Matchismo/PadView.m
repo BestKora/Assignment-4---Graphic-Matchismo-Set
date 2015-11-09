@@ -33,7 +33,8 @@
 - (void)attachCardsViewToPoint:(CGPoint)anchorPoint
 {
    for (UIView *v in [self subviews]) {
-        UIAttachmentBehavior *attachment = [[UIAttachmentBehavior alloc] initWithItem:v attachedToAnchor:anchorPoint];
+        UIAttachmentBehavior *attachment = [[UIAttachmentBehavior alloc]
+                                            initWithItem:v attachedToAnchor:anchorPoint];
        [self.attachementsForViews addObject:attachment];
         [self.animator addBehavior:attachment];
    }
@@ -75,9 +76,6 @@
                 attachment.anchorPoint = gesturePoint;
             }
         } else if (gesture.state == UIGestureRecognizerStateEnded) {
-            for (UIAttachmentBehavior *attachment in self.attachementsForViews) {
-                attachment.anchorPoint = gesturePoint;
-            }
             for (UIAttachmentBehavior *attachment in self.attachementsForViews) {
                 [self.animator removeBehavior:attachment];
             }

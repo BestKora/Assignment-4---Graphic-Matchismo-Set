@@ -218,8 +218,9 @@
             NSUInteger index =[self.indexCardsForCardsView[indexView] unsignedIntegerValue];
             [self.game chooseCardAtIndex:index];
             [self updateUI];
-            if ([self.game.matchedCards count] == [self numberOfMatches]&& self.game.lastFlipPoints>0){
-            [self deleteCardsFromGrid];
+            if ([self.game.matchedCards count] == [self numberOfMatches] &&
+                self.game.lastFlipPoints>0){
+                                     [self deleteCardsFromGrid];
             }
         }
     } else {

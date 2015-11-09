@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface PadView : UIView
+
 @property (nonatomic) BOOL pinchedViews;
 
 -(void)pinch:(UIPinchGestureRecognizer *)gesture;
