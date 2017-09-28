@@ -255,6 +255,7 @@ static void drawStripes (void *info, CGContextRef context) {
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     [self setup];
 }
 

@@ -303,14 +303,38 @@
     if (([self.deck count]-self.game.cardsInPlay) < NUMBER_ADD_CARDS ){
         addNumberCards = [self.deck count]-self.game.cardsInPlay;
         [ @"Добавляю"  stringByAppendingString:numberCards];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil
-                                                        message:@"В колоде недостаточно карт ..."
-                                                       delegate:nil
-                                              cancelButtonTitle:nil
-                                              otherButtonTitles:[ @"Добавляю "  stringByAppendingString:numberCards], nil];
-        [alert show];
+        /*      UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil
+         message:@"В колоде недостаточно карт ..."
+         delegate:nil
+         cancelButtonTitle:nil
+         otherButtonTitles:[ @"Добавляю "  stringByAppendingString:numberCards], nil];
+         [alert show]; */
+        UIAlertController * alert = [UIAlertController
+                                     alertControllerWithTitle:nil
+                                     message:@"В колоде недостаточно карт ..."
+                                     preferredStyle:UIAlertControllerStyleAlert];
+        
+        //Add Buttons
+        UIAlertAction* yesButton = [UIAlertAction
+                                    actionWithTitle:[@"Добавляю " stringByAppendingString:numberCards]
+                                    style:UIAlertActionStyleDefault
+                                    handler:^(UIAlertAction * action) {
+                                        //Handle your yes please button action here
+                                        //           [self addCardsToTable:addNumberCards];
+                                    }];
+        //Add your buttons to alert controller
+        
+        [alert addAction:yesButton];
+        [self presentViewController:alert animated:YES completion:nil];
 
     }
+ 
+     [self addCardsToTable:addNumberCards];
+}
+
+//----- Добавление карт на игровой стол ---------
+- (void)addCardsToTable:( NSUInteger) addNumberCards
+{
     [self removeHints];
     [self restartHints];
     CGPoint point = CGPointMake(self.view.bounds.size.width / 2.0f, self.view.bounds.size.height);
@@ -320,38 +344,38 @@
     if ([self.game.indexesOfInsertedCards count] ==  addNumberCards) {
         self.grid.minimumNumberOfCells =[[self.game cardsOnTable] count]; ///???
         if (self.grid.inputsAreValid){
-           NSUInteger columnCount =self.grid.columnCount;
-  
-    __block NSUInteger j;
-     j=[self.cellCenters count];
-        NSIndexSet *indexes=self.game.indexesOfInsertedCards;
-
+            NSUInteger columnCount =self.grid.columnCount;
+            
+            __block NSUInteger j;
+            j=[self.cellCenters count];
+            NSIndexSet *indexes=self.game.indexesOfInsertedCards;
+            
             [indexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
                 Card *card = [self.game cardAtIndex:idx];
                 NSUInteger row = (j+0.5)/columnCount;
                 NSUInteger column =j%columnCount;
-        
+                
                 CGPoint center = [self.grid centerOfCellAtRow:row inColumn:column];
                 CGRect frame = [self.grid frameOfCellAtRow:row inColumn:column];
                 
                 CGRect frame1 = CGRectInset(frame,
                                             frame.size.width * (1.0 - DEFAULT_FACE_CARD_SCALE_FACTOR),
                                             frame.size.height * (1.0 - DEFAULT_FACE_CARD_SCALE_FACTOR));
-
+                
                 UIView *cardView =[self cellViewForCard:card inRect:frame1];
                 [self.cardsView addObject:cardView];
                 self.cellCenters[j]= [NSValue valueWithCGPoint:center];
                 self.indexCardsForCardsView[j]= [NSNumber numberWithInteger: idx];
                 j++;
-
+                
                 cardView.center =point;
                 cardView.hidden =YES;
-               [cardsViewToInsert addObject:cardView];
-
+                [cardsViewToInsert addObject:cardView];
+                
             }];
             
-        [self animateInsertingCards:cardsViewToInsert forView:self.padView];
-        self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",([self.deck count]-self.game.cardsInPlay)];
+            [self animateInsertingCards:cardsViewToInsert forView:self.padView];
+            self.resultsLabel.text=[NSString stringWithFormat:@"Cards in deck: %lu",([self.deck count]-self.game.cardsInPlay)];
         }
     }
 }
